@@ -1,0 +1,9 @@
+Sample	Healthy_REP1.mLb.clN_peaks	Healthy_REP2.mLb.clN_peaks	Healthy_REP3.mLb.clN_peaks	Patient_REP1.mLb.clN_peaks	Patient_REP2.mLb.clN_peaks	Patient_REP3.mLb.clN_peaks	Patient_REP4.mLb.clN_peaks	Patient_REP5.mLb.clN_peaks
+Healthy_REP1	55112.0							
+Healthy_REP2		52888.0						
+Healthy_REP3			69293.0					
+Patient_REP1				65124.0				
+Patient_REP2					66582.0			
+Patient_REP3						53558.0		
+Patient_REP4							60740.0	
+Patient_REP5								59126.0

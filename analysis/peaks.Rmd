@@ -1,0 +1,468 @@
+---
+title: "Peak-calling and Quality Control Checks"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+
+# Introduction
+
+Peaks were called using Macs2 within the NFCore/ATAC pipeline using the default filters.
+
+
+```{r setup,include=F,echo=FALSE}
+options(bitmapType='cairo')
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(ComplexHeatmap)
+library(ggrepel)
+library(ggpubr)
+library(ggplotify)
+library(ggvenn)
+library(ggseqlogo)
+library(patchwork)
+library(viridis)
+library(formatR)
+library(sva)
+if (!requireNamespace("downloadthis", quietly = TRUE)) {
+  install.packages("downloadthis")
+}
+library(downloadthis)
+
+knitr::opts_chunk$set(
+  echo = F,
+  dpi = 150,
+  error=FALSE,
+  warning = F,
+  dev = c("png","pdf"),
+  message = F)
+```
+
+
+```{r setup2,warning=F,include=F}
+#Create directories for analysis
+analysis.path<-"output/"
+if(!dir.exists(analysis.path))
+  dir.create(analysis.path,showWarnings = T,recursive = T)
+analysis.tables<-file.path("docs/tables/")
+if(!dir.exists(analysis.tables))
+  dir.create(analysis.tables, recursive = T)
+plots.dir <- file.path("docs/plots/")
+if(!dir.exists(plots.dir))
+  dir.create(plots.dir, recursive = T)
+source("code/globalfun.R")
+```
+
+
+```{r}
+knitr::opts_chunk$set(fig.path = plots.dir)
+# custom hook: after each plot chunk, append a download link
+knitr::knit_hooks$set(
+  plot = function(x, options) {
+    xx <- gsub("png$", "pdf", x)
+    fig_link <- xfun::embed_file(xx, text = paste0("Download ", basename(xx)))
+    paste0(knitr::hook_plot_md(x, options), "\n\n", fig_link, "\n")
+  }
+)
+```
+
+```{r}
+sample.sheet<-read.csv("output/NFCore_ATACseq/pipeline_info/samplesheet.valid.csv",header=T)
+sample.sheet$group<-gsub("_REP.*","",sample.sheet$sample)
+```
+
+```{r}
+load("output/processed_data.RData")
+```
+
+
+
+```{r}
+peakcaller = list("macs2" = "narrowPeak")
+path2peaks <- "output/NFCore_ATACseq//bwa/merged_library/macs2/narrow_peak/"
+```
+
+```{r, eval=FALSE}
+peakN = c()
+peakWidth = c()
+for (samp in gsub("_T1", "", sample.sheet$sample)) {
+  for (caller in names(peakcaller)) {
+    peakInfo = read.table(
+      paste0(path2peaks, "/",samp,".mLb.clN_peaks.narrowPeak"),
+      header = FALSE,
+      fill = TRUE
+    )  %>% mutate(width = abs(V3 - V2))
+    peakN = data.frame(
+      peakN = nrow(peakInfo),
+      Caller = caller,
+      Group = gsub("_R.*", "", samp),
+      Sample = samp,
+      Replicate = gsub(".*_", "", samp)
+    ) %>% rbind(peakN, .)
+    peakWidth = data.frame(
+      width = peakInfo$width,
+      Group = gsub("_R.*", "", samp),
+      Sample = samp,
+      Replicate = gsub(".*_", "", samp)
+    )  %>% rbind(peakWidth, .)
+  }
+}
+save(peakN,peakWidth, file = "output/peak_counts.RData")
+```
+
+\FloatBarrier
+
+# Exploration of peak calls
+
+Here the number of peaks together with their reproducibility across replicates are explored. The reproducibility score for each group is calculated based on the consistency of peak detection across its corresponding replicate samples. Specifically, it measures the proportion of peaks that overlap (i.e., are found in similar locations or regions) among the replicates within that group, relative to the total number of peaks considered. Higher percentages indicate greater consistency between replicates for that group.
+
+## Number of peaks called
+
+```{r, echo=FALSE}
+load("output/peak_counts.RData")
+generate_datatable(
+  peakN[,c("Sample","Group","peakN")],
+  caption = "Total number of peaks per replicate",extra.options = NULL
+)
+```
+
+The Barplot below represents the total number of peaks identified in each individual replicate sample.
+
+```{r num-peaks, fig.cap="Number of peaks called for each library", fig.width=10,fig.height=8}
+ggplot(peakN, aes(
+  x = Sample, y = peakN,fill=Group)) +
+  geom_col(position = position_dodge(1)) +
+  coord_flip() + 
+  scale_y_continuous(labels = scales::label_number(
+    scale_cut = scales::cut_short_scale())) +
+  theme_minimal() +  
+  geom_text(
+    aes(label = paste0(peakN/1000,"k")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+\FloatBarrier
+
+## Sample Peak reproducibility
+
+This bar plot displays the percentage of peak reproducibility for different sample groups. The reproducibility score for each group is calculated based on the consistency of peak detection across its corresponding replicate samples. Specifically, it measures the proportion of peaks that overlap (i.e., are found in similar locations or regions) among the replicates within that group, relative to the total number of peaks considered. Higher percentages indicate greater consistency between replicates for that group.
+
+```{r, eval=FALSE}
+library(GenomicRanges)
+samples <- unique(sample.sheet$group)
+peakOverlap_df_list <- list()
+peakOverlap.list <- list()
+
+for (caller in names(peakcaller)) {
+  # Initialize the nested list for this specific caller to prevent subscript errors
+  peakOverlap.list[[caller]] <- list() 
+  
+  for (samp in samples) {
+    # Extract replicates for the current group
+    repL <- gsub("_T1", "", sample.sheet$sample[sample.sheet$group == samp])
+    
+    # Store GRanges for each replicate in a temporary list
+    gr_list <- list()
+    
+    for (repl in repL) {
+      # It's a good idea to construct the file path explicitly and safely
+      file_path <- file.path(path2peaks, paste0(repl, ".mLb.clN_peaks.narrowPeak"))
+      
+      peakInfo <- read.table(file_path, header = FALSE, fill = TRUE)
+      
+      gr_list[[repl]] <- GRanges(
+        seqnames = peakInfo$V1,
+        ranges = IRanges(start = peakInfo$V2, end = peakInfo$V3),
+        strand = "*"
+      )
+    }
+    
+    # 2. Get reproducible peaks across ALL replicates using Reduce and subsetByOverlaps
+    if (length(gr_list) > 0) {
+      overlap.gr <- Reduce(subsetByOverlaps, gr_list)
+    } else {
+      overlap.gr <- GRanges()
+    }
+    
+    # Store the overlapping GRanges object
+    peakOverlap.list[[caller]][[samp]] <- overlap.gr
+    
+    # Store the metrics as a single-row dataframe in our list
+    list_name <- paste(caller, samp, sep = "_")
+    peakOverlap_df_list[[list_name]] <- data.frame(
+      Group = samp,
+      Caller = caller,
+      peakReprod = length(overlap.gr)
+    )
+  }
+}
+
+# 3. Combine all iteration dataframes efficiently
+peakOverlap <- bind_rows(peakOverlap_df_list)
+
+# 4. Join and calculate metrics
+# Note: Added 'Caller' to the join conditions to prevent duplication if testing multiple callers
+peakReprod <- left_join(peakN, peakOverlap, by = c("Group", "Caller")) %>% 
+  mutate(peakReprodRate = (peakReprod / peakN) * 100)
+
+# 5. Final Selection
+final_metrics <- peakReprod %>% 
+  dplyr::select(
+    Group,
+    Caller,
+    Replicate, # Assuming this exists in your original peakN dataframe
+    peakN,
+    peakReprodNum = peakReprod,
+    peakReprodRate
+  )
+save(peakReprod,file="output/peakReprod.RData")
+```
+
+\FloatBarrier
+
+```{r peak-reproducibility-plot,fig.cap="Percentage of sample peak reproducibility calculated from the total number of overlapping peaks within group replicate sets",fig.width=10,fig.height=8}
+load("output/peakReprod.RData")
+ggplot(peakReprod, aes(
+  x = Sample, y = peakReprodRate,fill=Group)) +
+  geom_col(position = position_dodge(1)) +
+  coord_flip() + 
+  scale_y_continuous(labels = scales::label_number(
+    scale_cut = scales::cut_short_scale())) +
+  labs(title = "Peak reproducibility %",
+       x = "Sample",
+       y = "Reproducibility (%)") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+## Number of concensus peaks per condition
+
+The bar plot below represents the total number of concensus peaks identified in each condition. Concensus peaks are defined as those that are consistently detected across all replicates within a given condition, providing a more reliable representation of the underlying biological signal.
+
+```{r number-concensus-peaks,fig.height=8,fig.width=18, fig.cap="Number of concensus peaks per condition"}
+plot_data <- data.frame(
+  Sample = rownames(peak_count.stats_conc),
+  Peak_count = diag(peak_count.stats_conc)
+)
+ggplot(plot_data,
+       aes(x = Sample, y = Peak_count,fill = Sample)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "",
+       x = "",
+       y = "Peak count") +
+  geom_text(aes(label = paste0(round(Peak_count / 1000, 2), "k")),
+            position = position_stack(vjust = 0.5),
+            size = 3) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+\FloatBarrier
+
+
+\FloatBarrier
+
+## Fraction of Reads in Peaks (FRiP) score
+
+The Fraction of Reads in Peaks (FRiP) score is a quality metric that quantifies the proportion of sequencing reads that fall within the called peak regions. A higher FRiP score indicates better enrichment of signal over background noise, suggesting that the peak calling was effective and that the data is of high quality. In general, a FRiP score above 1% is considered acceptable for ATAC-seq data, with higher values indicating better quality.
+
+### Per library
+
+```{r}
+peak.qual$group <-gsub("_REP.*","",peak.qual$Sample)
+colnames(peak.qual)[ncol(peak.qual)-1]<-"FRiP"
+```
+
+```{r FRiP-library,fig.height=6,fig.width=12, fig.cap="Fraction of Reads in Peaks called per library"}
+ggplot(peak.qual, aes(
+  x = Sample, y = FRiP,fill=group)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = "FRiP",
+       x = "",
+       y = "FRiP",
+       fill= "group") +
+  geom_text(
+    aes(label = paste0(FRiP,"%")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+\FloatBarrier
+
+### Per condition
+
+```{r FRiP-condition,fig.height=6,fig.width=12, fig.cap="Fraction of Reads in Peaks called per condition", echo=F}
+ggplot(frip.plot_data, aes(
+  x = Sample, y = FRiP,fill=Sample)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = "FRiP",
+       x = "Sample",
+       y = "FRiP",
+       fill= "Sample") +
+  geom_text(
+    aes(label = paste0(round(FRiP,1),"%")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+\FloatBarrier
+
+# Peak annotation
+
+Called peaks were annotated using Homer within the NFCore/ATAC pipeline. The figures below represent the number of peaks annotated to different genomic features per library and per condition. The annotation provides insights into the genomic context of the identified peaks, helping to understand their potential regulatory roles.
+
+\FloatBarrier
+
+## Per library
+
+```{r peak-annotation-barplot,fig.height=8,fig.width=18,fig.cap="Annotation of peaks per library",echo=F}
+ggplot(peak.annotation_stats, aes(
+  x = Sample, y = Peak_count,fill=Stats)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = "",
+       x = "",
+       y = "Peak count",
+       fill= "Annotation") +
+  geom_text(
+    aes(label = paste0(round(Peak_count/1000,2),"k")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.8)
+  )
+```
+\FloatBarrier
+
+## Per condition
+
+```{r peak-annot-condition,fig.height=8,fig.width=18, fig.cap="Annotation of concensus peaks per condition", echo=F}
+annotation.conc.stats$group <- gsub("_REP.*","",annotation.conc.stats$Sample)
+ggplot(annotation.conc.stats, aes(
+  x = Sample, y = Peak_count,fill=Stats)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = "",
+       x = "",
+       y = "Peak count",
+       fill= "Annotation") +
+  geom_text(
+    aes(label = paste0(round(Peak_count/1000,2),"k")),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+   axis.text.y = element_text(
+      size = 12 
+    ),
+    plot.title = element_text(hjust = 0.8)
+  )
+```
+
+
+# Appendix
+
+## All Code used in this analysis
+
+```{r appendix, echo=FALSE, results='asis'}
+# Get all chunk labels in the document
+labels <- knitr::all_labels()
+
+# Exclude this specific chunk so it doesn't print its own generation code
+labels <- labels[labels != "appendix"]
+
+# Loop through each label, print a markdown header, and then the code block
+for (label in labels) {
+  # Print the header (you can change the #### to adjust the heading size)
+  cat("#### Chunk: `", label, "`\n\n", sep = "")
+  
+  # Print the opening of the code block
+  cat("```r\n")
+  
+  # Fetch and print the actual code from the chunk
+  cat(knitr::knit_code$get(label), sep = "\n")
+  
+  # Print the closing of the code block
+  cat("\n```\n\n")
+}
+```
+
+## Session Information

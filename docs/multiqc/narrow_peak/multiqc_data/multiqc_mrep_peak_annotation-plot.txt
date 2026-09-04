@@ -1,0 +1,3 @@
+Sample	Intergenic	TTS	Unassigned	exon	intron	promoter-TSS
+Healthy	22949.0	1891.0	13.0	5880.0	31500.0	12244.0
+Patient	26365.0	2205.0	33.0	7191.0	37972.0	12587.0

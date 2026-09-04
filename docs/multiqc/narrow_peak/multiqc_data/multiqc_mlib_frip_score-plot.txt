@@ -1,0 +1,9 @@
+Sample	Healthy_REP1	Healthy_REP2	Healthy_REP3	Patient_REP1	Patient_REP2	Patient_REP3	Patient_REP4	Patient_REP5
+Healthy_REP1	0.864428							
+Healthy_REP2		0.803523						
+Healthy_REP3			0.726782					
+Patient_REP1				0.652065				
+Patient_REP2					0.704806			
+Patient_REP3						0.774732		
+Patient_REP4							0.713841	
+Patient_REP5								0.833692

@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Peak-calling and Quality Control Checks</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.34.0/datatables.js"></script>
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="site_libs/jszip-1.13.6/jszip.min.js"></script>
+<link href="site_libs/dt-ext-buttons-1.13.6/css/buttons.dataTables.min.css" rel="stylesheet" />
+<script src="site_libs/dt-ext-buttons-1.13.6/js/dataTables.buttons.min.js"></script>
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.html5.min.js"></script>
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.colVis.min.js"></script>
+<script src="site_libs/dt-ext-buttons-1.13.6/js/buttons.print.min.js"></script>
+<link href="site_libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.2/js/crosstalk.min.js"></script>
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">NK_cells</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Background</a>
+</li>
+<li>
+  <a href="preprocessing.html">Pre-processing and QC Checks</a>
+</li>
+<li>
+  <a href="peaks.html">Peak Calling and QC Check</a>
+</li>
+<li>
+  <a href="differential_analysis.html">Differential Accessibility Analysis</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Peak-calling and Quality Control
+Checks</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2026-09-04
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong> <code>NK_cells/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.2). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R
+Markdown file created these results, you’ll want to first commit it to
+the Git repo. If you’re still working on the analysis, you can ignore
+this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20260903code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20260903)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20260903code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20260903)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrong70c3c72">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong> 70c3c72
+</a>
+</p>
+</div>
+<div id="strongRepositoryversionstrong70c3c72"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version 70c3c72.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    Projects/Hui/EED/Combined_analysis/
+    Ignored:    Projects/PASC-Project/.Rhistory
+    Ignored:    Projects/PASC-Project/.Rproj.user/
+    Ignored:    Projects/Short_Lab/NK_cells/.Rproj.user/
+    Ignored:    Projects/scMultiOme/.Rhistory
+    Ignored:    Projects/scMultiOme/.Rproj.user/
+    Ignored:    Projects/scMultiOme/output/combined/
+    Ignored:    sra_tools/
+
+Untracked files:
+    Untracked:  .R/
+    Untracked:  .bash_history
+    Untracked:  .bash_logout
+    Untracked:  .bashrc
+    Untracked:  .cache/
+    Untracked:  .cargo/
+    Untracked:  .conda/
+    Untracked:  .condarc
+    Untracked:  .config/
+    Untracked:  .dotnet/
+    Untracked:  .gitattributes
+    Untracked:  .gitconfig
+    Untracked:  .gitignore
+    Untracked:  .java/
+    Untracked:  .lesshst
+    Untracked:  .local/
+    Untracked:  .ncbi/
+    Untracked:  .ncftp/
+    Untracked:  .nextflow/
+    Untracked:  .profile
+    Untracked:  .sdkman/
+    Untracked:  .sh_history
+    Untracked:  .singularity/
+    Untracked:  .ssh/
+    Untracked:  .tcshrc
+    Untracked:  .viminfo
+    Untracked:  .vscode-R/
+    Untracked:  .vscode-server/
+    Untracked:  .wget-hsts
+    Untracked:  .xonshrc
+    Untracked:  .zshrc
+    Untracked:  BioinfoTools/
+    Untracked:  Projects/250809-Analysis-of-Foxp3-CutnTag-in-Tregs.pdf
+    Untracked:  Projects/Clarissa/
+    Untracked:  Projects/Hui/EED/ATACseq/
+    Untracked:  Projects/Hui/EED/CutnTag/
+    Untracked:  Projects/Hui/EED/RNAseq_/
+    Untracked:  Projects/Jack/
+    Untracked:  Projects/PASC-Project/Bivalency-H3K27me3-and-H3K4me3/
+    Untracked:  Projects/PASC-Project/GEO_submission/
+    Untracked:  Projects/PASC-Project/H3K27me3_CUTnTag/
+    Untracked:  Projects/PASC-Project/H3K4me3_CUTnTag/
+    Untracked:  Projects/PASC-Project/LICENSE
+    Untracked:  Projects/PASC-Project/PASC-ATACseq/
+    Untracked:  Projects/PASC-Project/README.html
+    Untracked:  Projects/PASC-Project/analysis/1_H3K4me3.Rmd
+    Untracked:  Projects/PASC-Project/analysis/2_H3K27me3.Rmd
+    Untracked:  Projects/PASC-Project/analysis/3_bivalency.Rmd
+    Untracked:  Projects/PASC-Project/analysis/figure/
+    Untracked:  Projects/PASC-Project/analysis/images/
+    Untracked:  Projects/PASC-Project/code/H3K27me3/
+    Untracked:  Projects/PASC-Project/code/H3K4me3/
+    Untracked:  Projects/PASC-Project/code/bivalency/
+    Untracked:  Projects/PASC-Project/docs/1_H3K4me3.html
+    Untracked:  Projects/PASC-Project/docs/2_H3K27me3.html
+    Untracked:  Projects/PASC-Project/docs/3_bivalency.html
+    Untracked:  Projects/PASC-Project/docs/figure/
+    Untracked:  Projects/PASC-Project/docs/images/
+    Untracked:  Projects/PASC-Project/docs/index.html
+    Untracked:  Projects/PASC-Project/docs/site_libs/
+    Untracked:  Projects/Rennata/
+    Untracked:  Projects/Short_Lab/NK_cells/analysis/_license.Rmd
+    Untracked:  Projects/Short_Lab/NK_cells/analysis/differential_analysis.Rmd
+    Untracked:  Projects/Short_Lab/NK_cells/analysis/peaks.Rmd
+    Untracked:  Projects/Short_Lab/NK_cells/analysis/preprocessing.Rmd
+    Untracked:  Projects/Short_Lab/NK_cells/code/Annotate_peaks.sh
+    Untracked:  Projects/Short_Lab/NK_cells/code/Step1-Run_NFCore_ATACseq.sh
+    Untracked:  Projects/Short_Lab/NK_cells/code/globalfun.R
+    Untracked:  Projects/Short_Lab/NK_cells/data/260820_VH00362_716_AAJ5TLMM5/
+    Untracked:  Projects/Short_Lab/NK_cells/data/Samplesheet.csv
+    Untracked:  Projects/Short_Lab/NK_cells/output/NFCore_ATACseq/
+    Untracked:  Projects/Short_Lab/NK_cells/output/dge.RData
+    Untracked:  Projects/Short_Lab/NK_cells/output/geo_submission/
+    Untracked:  Projects/Short_Lab/NK_cells/output/peakReprod.RData
+    Untracked:  Projects/Short_Lab/NK_cells/output/peak_counts.RData
+    Untracked:  Projects/Short_Lab/NK_cells/output/processed_data.RData
+    Untracked:  Projects/scMultiOme/GenomeInfoDb_1.48.0.tar.gz
+    Untracked:  Projects/scMultiOme/Rplot.png
+    Untracked:  Projects/scMultiOme/S4Vectors_0.50.2.tar.gz
+    Untracked:  Projects/scMultiOme/Signac_1.17.1.tar.gz
+    Untracked:  Projects/scMultiOme/SingleCell-Multiomics/
+    Untracked:  Projects/scMultiOme/analysis/_scCutnTag_H3K27me3_child_qc.Rmd
+    Untracked:  Projects/scMultiOme/analysis/_scCutnTag_H3K27me3_gemini.Rmd
+    Untracked:  Projects/scMultiOme/analysis/_scCutnTag_H3K27me3_gemini_backup.Rmd
+    Untracked:  Projects/scMultiOme/analysis/combined.Rmd
+    Untracked:  Projects/scMultiOme/analysis/figure/
+    Untracked:  Projects/scMultiOme/analysis/scCutnTag.Rmd
+    Untracked:  Projects/scMultiOme/analysis/scCutnTag_H3K27me3.Rmd
+    Untracked:  Projects/scMultiOme/analysis/scCutnTag_batch1.Rmd
+    Untracked:  Projects/scMultiOme/analysis/scRNAseq.Rmd
+    Untracked:  Projects/scMultiOme/analysis/scRNAseq_with_Soup.Rmd
+    Untracked:  Projects/scMultiOme/analysis/scRNAseq_with_batch_correction.Rmd
+    Untracked:  Projects/scMultiOme/analysis/scRNAseq_with_cellbender.Rmd
+    Untracked:  Projects/scMultiOme/code/Run_cellbender.sh
+    Untracked:  Projects/scMultiOme/code/Run_cellrangerARC.sh
+    Untracked:  Projects/scMultiOme/code/Step0_build_samplesheet.sh
+    Untracked:  Projects/scMultiOme/code/Step1_runcellrangerARC.sh
+    Untracked:  Projects/scMultiOme/code/Step2_runcellbender.sh
+    Untracked:  Projects/scMultiOme/data/GEX_filt.rds
+    Untracked:  Projects/scMultiOme/data/cellbendermetrics.RDS
+    Untracked:  Projects/scMultiOme/data/combined_GEX.rds
+    Untracked:  Projects/scMultiOme/data/combined_GEX_filt.rds
+    Untracked:  Projects/scMultiOme/data/combined_GEX_filt_cellbender.rds
+    Untracked:  Projects/scMultiOme/data/combined_GEX_filt_soup.rds
+    Untracked:  Projects/scMultiOme/data/combined_GEX_raw.rds
+    Untracked:  Projects/scMultiOme/data/experiment_design.png
+    Untracked:  Projects/scMultiOme/data/intro1.png
+    Untracked:  Projects/scMultiOme/data/samplesheet.csv
+    Untracked:  Projects/scMultiOme/data/scMultiome/
+    Untracked:  Projects/scMultiOme/data/soup_sc.rds
+    Untracked:  Projects/scMultiOme/data/soup_sc_decont.rds
+    Untracked:  Projects/scMultiOme/docs/combined.html
+    Untracked:  Projects/scMultiOme/docs/figure/
+    Untracked:  Projects/scMultiOme/docs/index.html
+    Untracked:  Projects/scMultiOme/docs/license.html
+    Untracked:  Projects/scMultiOme/docs/scCutnTag.html
+    Untracked:  Projects/scMultiOme/docs/scCutnTag_H3K27me3.html
+    Untracked:  Projects/scMultiOme/docs/scCutnTag_batch1.html
+    Untracked:  Projects/scMultiOme/docs/scRNAseq.html
+    Untracked:  Projects/scMultiOme/docs/scRNAseq_with_Soup.html
+    Untracked:  Projects/scMultiOme/docs/scRNAseq_with_batch_correction.html
+    Untracked:  Projects/scMultiOme/docs/scRNAseq_with_cellbender.html
+    Untracked:  Projects/scMultiOme/docs/site_libs/
+    Untracked:  Projects/scMultiOme/figure/
+    Untracked:  Projects/scMultiOme/multiOme.Rproj
+    Untracked:  Projects/scMultiOme/output/All_batches_CutnTag.qs
+    Untracked:  Projects/scMultiOme/output/All_batches_CutnTag_with_top_up.qs
+    Untracked:  Projects/scMultiOme/output/All_batches_H3K27me3_CutnTag_with_top_up.qs
+    Untracked:  Projects/scMultiOme/output/CellRanger/
+    Untracked:  Projects/scMultiOme/output/GEX_filt_clust.rds
+    Untracked:  Projects/scMultiOme/output/SoupX/
+    Untracked:  Projects/scMultiOme/output/batch1_CutnTag.qs
+    Untracked:  Projects/scMultiOme/output/combined.sct_batchcorrected.rds
+    Untracked:  Projects/scMultiOme/output/combined_GEX_norm.rds
+    Untracked:  Projects/scMultiOme/output/combined_GEX_norm_Soup.rds
+    Untracked:  Projects/scMultiOme/output/combined_GEX_norm_cellbender.rds
+    Untracked:  Projects/scMultiOme/output/combined_GEX_norm_no_decont.rds
+    Untracked:  Projects/scMultiOme/output/combined_no_decontamination.RDS
+    Untracked:  Projects/scMultiOme/output/scCutnTag/
+    Untracked:  Projects/scMultiOme/output/scRNAseq/
+    Untracked:  Projects/scMultiOme/shinyApp/
+    Untracked:  R/
+    Untracked:  README.md
+    Untracked:  genomes/
+    Untracked:  gvfs
+    Untracked:  miniconda3/
+    Untracked:  www/
+
+Unstaged changes:
+    Deleted:    Projects/Hui/EED/RNAseq/.Rprofile
+    Deleted:    Projects/Hui/EED/RNAseq/.gitattributes
+    Deleted:    Projects/Hui/EED/RNAseq/.gitignore
+    Deleted:    Projects/Hui/EED/RNAseq/README.md
+    Deleted:    Projects/Hui/EED/RNAseq/RNAseq.Rproj
+    Deleted:    Projects/Hui/EED/RNAseq/_workflowr.yml
+    Deleted:    Projects/Hui/EED/RNAseq/analysis/_site.yml
+    Deleted:    Projects/Hui/EED/RNAseq/analysis/about.Rmd
+    Deleted:    Projects/Hui/EED/RNAseq/analysis/index.Rmd
+    Deleted:    Projects/Hui/EED/RNAseq/analysis/license.Rmd
+    Deleted:    Projects/Hui/EED/RNAseq/code/README.md
+    Deleted:    Projects/Hui/EED/RNAseq/data/README.md
+    Deleted:    Projects/Hui/EED/RNAseq/docs/.nojekyll
+    Deleted:    Projects/Hui/EED/RNAseq/output/README.md
+    Deleted:    Projects/PASC-Project/.gitattributes
+    Deleted:    Projects/PASC-Project/.gitignore
+    Modified:   Projects/PASC-Project/README.md
+    Modified:   Projects/PASC-Project/analysis/_site.yml
+    Deleted:    Projects/PASC-Project/analysis/about.Rmd
+    Modified:   Projects/PASC-Project/analysis/index.Rmd
+    Deleted:    Projects/PASC-Project/analysis/license.Rmd
+    Modified:   Projects/Short_Lab/NK_cells/analysis/_site.yml
+    Deleted:    Projects/Short_Lab/NK_cells/analysis/about.Rmd
+    Modified:   Projects/Short_Lab/NK_cells/analysis/index.Rmd
+    Deleted:    Projects/Short_Lab/NK_cells/analysis/license.Rmd
+    Deleted:    Projects/scMultiOme/.Rprofile
+    Deleted:    Projects/scMultiOme/.gitattributes
+    Modified:   Projects/scMultiOme/.gitignore
+    Modified:   Projects/scMultiOme/analysis/_site.yml
+    Deleted:    Projects/scMultiOme/analysis/about.Rmd
+    Modified:   Projects/scMultiOme/analysis/index.Rmd
+    Deleted:    Projects/scMultiOme/analysis/license.Rmd
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Peaks were called using Macs2 within the NFCore/ATAC pipeline using
+the default filters.</p>
+</div>
+<div id="exploration-of-peak-calls" class="section level1">
+<h1>Exploration of peak calls</h1>
+<p>Here the number of peaks together with their reproducibility across
+replicates are explored. The reproducibility score for each group is
+calculated based on the consistency of peak detection across its
+corresponding replicate samples. Specifically, it measures the
+proportion of peaks that overlap (i.e., are found in similar locations
+or regions) among the replicates within that group, relative to the
+total number of peaks considered. Higher percentages indicate greater
+consistency between replicates for that group.</p>
+<div id="number-of-peaks-called" class="section level2">
+<h2>Number of peaks called</h2>
+<div id="htmlwidget-5787418e8adf801131b3" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5787418e8adf801131b3">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"caption":"<caption>Total number of peaks per replicate<\/caption>","data":[["Healthy_REP1","Healthy_REP2","Healthy_REP3","Patient_REP1","Patient_REP2","Patient_REP3","Patient_REP4","Patient_REP5"],["Healthy","Healthy","Healthy","Patient","Patient","Patient","Patient","Patient"],[55129,52923,69329,65135,62771,53574,61107,59151]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Sample<\/th>\n      <th>Group<\/th>\n      <th>peakN<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Bfrtip","buttons":["excel","csv","copy"],"columnDefs":[{"className":"dt-right","targets":2},{"name":"Sample","targets":0},{"name":"Group","targets":1},{"name":"peakN","targets":2}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p>The Barplot below represents the total number of peaks identified in
+each individual replicate sample.</p>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/num-peaks-1.png" alt="Number of peaks called for each library" width="1500" />
+<p class="caption">
+Number of peaks called for each library
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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SytK32/mbr74lc1XlV992pK0ZbDMoWzPVsxW4dbr29y3HShXLs8vH9sesr1zB2NHyY6XO5fsvFBhV1G3i7BLsktaGVzZXWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAxMjA5IDAwMDAwIG4gCjAwMDAwMDEyOTIgMDAwMDAgbiAKMDAwMDAwMTQwNCAwMDAwMCBuIAowMDAwMDAxNDM3IDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDA0MTMyIDAwMDAwIG4gCjAwMDAwMDQzODkgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAxMSAvSW5mbyAxIDAgUiAvUm9vdCAyIDAgUiA+PgpzdGFydHhyZWYKNDQ4NgolJUVPRgo=" download="num-peaks-1.pdf">Download
+num-peaks-1.pdf</a></p>
+</div>
+<div id="sample-peak-reproducibility" class="section level2">
+<h2>Sample Peak reproducibility</h2>
+<p>This bar plot displays the percentage of peak reproducibility for
+different sample groups. The reproducibility score for each group is
+calculated based on the consistency of peak detection across its
+corresponding replicate samples. Specifically, it measures the
+proportion of peaks that overlap (i.e., are found in similar locations
+or regions) among the replicates within that group, relative to the
+total number of peaks considered. Higher percentages indicate greater
+consistency between replicates for that group.</p>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/peak-reproducibility-plot-1.png" alt="Percentage of sample peak reproducibility calculated from the total number of overlapping peaks within group replicate sets" width="1500" />
+<p class="caption">
+Percentage of sample peak reproducibility calculated from the total
+number of overlapping peaks within group replicate sets
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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XWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAxMTQwIDAwMDAwIG4gCjAwMDAwMDEyMjMgMDAwMDAgbiAKMDAwMDAwMTMzNSAwMDAwMCBuIAowMDAwMDAxMzY4IDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDA0MDYzIDAwMDAwIG4gCjAwMDAwMDQzMjAgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAxMSAvSW5mbyAxIDAgUiAvUm9vdCAyIDAgUiA+PgpzdGFydHhyZWYKNDQxNwolJUVPRgo=" download="peak-reproducibility-plot-1.pdf">Download
+peak-reproducibility-plot-1.pdf</a></p>
+</div>
+<div id="number-of-concensus-peaks-per-condition"
+class="section level2">
+<h2>Number of concensus peaks per condition</h2>
+<p>The bar plot below represents the total number of concensus peaks
+identified in each condition. Concensus peaks are defined as those that
+are consistently detected across all replicates within a given
+condition, providing a more reliable representation of the underlying
+biological signal.</p>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/number-concensus-peaks-1.png" alt="Number of concensus peaks per condition" width="2700" />
+<p class="caption">
+Number of concensus peaks per condition
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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" download="number-concensus-peaks-1.pdf">Download
+number-concensus-peaks-1.pdf</a></p>
+</div>
+<div id="fraction-of-reads-in-peaks-frip-score" class="section level2">
+<h2>Fraction of Reads in Peaks (FRiP) score</h2>
+<p>The Fraction of Reads in Peaks (FRiP) score is a quality metric that
+quantifies the proportion of sequencing reads that fall within the
+called peak regions. A higher FRiP score indicates better enrichment of
+signal over background noise, suggesting that the peak calling was
+effective and that the data is of high quality. In general, a FRiP score
+above 1% is considered acceptable for ATAC-seq data, with higher values
+indicating better quality.</p>
+<div id="per-library" class="section level3">
+<h3>Per library</h3>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/FRiP-library-1.png" alt="Fraction of Reads in Peaks called per library" width="1800" />
+<p class="caption">
+Fraction of Reads in Peaks called per library
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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7qaqTR9LeCUXS61LK0rfb+ZuvviVzVeVX33akrRlsMyhbM9WzFbh1uvb3LcdKFcuzy8f2x6yvXMHY0fJjpc7l+y8UGFXUbeLsEuyS1oZXNldZVC1tep9dUr1SI1XTXutZu2m2te7ebuv7PHY01anVVda926vYO/Ner/6zgajhop9mH05+x42Rjf2f836urlJo6m06cN+4X7pgYgDfc2Ozc0tmi1lrXCrpHXyYMLBy994f9Pdxmyrb6e3lx4ChySHHn+b+O31w0GHe4+wjrR9Z/hdbQe1o6QT6lzeOdWV0iXtjusePhp4tLfHpafje8vv9x/TPVZzXOV42QnCiaITn07mn5w+lXXq6enk02O9S3rvnIk9c60vvG/wbNDZ8+d8z53p9+w/ed71/LELzheOXmRd7LrkcKlzwH6g4wf7HzoGHQY7hxyHui87Xe4Znjd84or7ldNXva+euxZw7dLI/JHh61HXb95IuCG9ybv56Fb6ree3c27P3FlzF3235J7SvYr7mvcbfjT9sV3qID0+6j068GDBgztj3LEnP2X/9H686CH5YcWEzkTzI9tHxyZ9Jy8/Xvh4/EnWk5mnxT8r/1z7zOTZd794/DIwFTs1/lz0/NOvm1+ov9j/0u5l73TY9P1XGa9mXpe8UX9z4C3rbf+7mHcTM7nvse8rP5h+6PkY9PHup4xPn34D94Tz+2VuZHN0cmVhbQplbmRvYmoKOSAwIG9iago8PAovVHlwZSAvRW5jb2RpbmcgL0Jhc2VFbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9EaWZmZXJlbmNlcyBbIDQ1L21pbnVzIDk2L3F1b3RlbGVmdAoxNDQvZG90bGVzc2kgL2dyYXZlIC9hY3V0ZSAvY2lyY3VtZmxleCAvdGlsZGUgL21hY3JvbiAvYnJldmUgL2RvdGFjY2VudAovZGllcmVzaXMgLy5ub3RkZWYgL3JpbmcgL2NlZGlsbGEgLy5ub3RkZWYgL2h1bmdhcnVtbGF1dCAvb2dvbmVrIC9jYXJvbiAvc3BhY2VdCj4+CmVuZG9iagoxMCAwIG9iago8PCAvVHlwZSAvRm9udCAvU3VidHlwZSAvVHlwZTEgL05hbWUgL0YyIC9CYXNlRm9udCAvSGVsdmV0aWNhCi9FbmNvZGluZyA5IDAgUiA+PgplbmRvYmoKeHJlZgowIDExCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAyMSAwMDAwMCBuIAowMDAwMDAwMTYzIDAwMDAwIG4gCjAwMDAwMDEyMjAgMDAwMDAgbiAKMDAwMDAwMTMwMyAwMDAwMCBuIAowMDAwMDAxNDE1IDAwMDAwIG4gCjAwMDAwMDE0NDggMDAwMDAgbiAKMDAwMDAwMDIxMiAwMDAwMCBuIAowMDAwMDAwMjkyIDAwMDAwIG4gCjAwMDAwMDQxNDMgMDAwMDAgbiAKMDAwMDAwNDQwMCAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDExIC9JbmZvIDEgMCBSIC9Sb290IDIgMCBSID4+CnN0YXJ0eHJlZgo0NDk3CiUlRU9GCg==" download="FRiP-library-1.pdf">Download
+FRiP-library-1.pdf</a> </p>
+</div>
+<div id="per-condition" class="section level3">
+<h3>Per condition</h3>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/FRiP-condition-1.png" alt="Fraction of Reads in Peaks called per condition" width="1800" />
+<p class="caption">
+Fraction of Reads in Peaks called per condition
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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" download="FRiP-condition-1.pdf">Download
+FRiP-condition-1.pdf</a></p>
+</div>
+</div>
+</div>
+<div id="peak-annotation" class="section level1">
+<h1>Peak annotation</h1>
+<p>Called peaks were annotated using Homer within the NFCore/ATAC
+pipeline. The figures below represent the number of peaks annotated to
+different genomic features per library and per condition. The annotation
+provides insights into the genomic context of the identified peaks,
+helping to understand their potential regulatory roles.</p>
+<div id="per-library-1" class="section level2">
+<h2>Per library</h2>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/peak-annotation-barplot-1.png" alt="Annotation of peaks per library" width="2700" />
+<p class="caption">
+Annotation of peaks per library
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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2fJNyyfyffO/XoFawV3RW6BbsLZgdKXnyvpV0Kqlq3pX668uWj2+xm/NgbWEtWlrfyi0LiwvfLkuZl1PkVbRmqKx9X7rW4sVikXFNza4bKjbiNoo2Di4ae6mqk0fS3glF0utSytK32/mbr74lc1XlV992pK0ZbDMoWzPVsxW4dbr29y3HShXLs8vH9sesr1zB2NHyY6XO5fsvFBhV1G3i7BLsktaGVzZXWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAyMjA3IDAwMDAwIG4gCjAwMDAwMDIyOTEgMDAwMDAgbiAKMDAwMDAwMjQwMyAwMDAwMCBuIAowMDAwMDAyNDM2IDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDA1MTMxIDAwMDAwIG4gCjAwMDAwMDUzODggMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAxMSAvSW5mbyAxIDAgUiAvUm9vdCAyIDAgUiA+PgpzdGFydHhyZWYKNTQ4NQolJUVPRgo=" download="peak-annotation-barplot-1.pdf">Download
+peak-annotation-barplot-1.pdf</a> </p>
+</div>
+<div id="per-condition-1" class="section level2">
+<h2>Per condition</h2>
+<div class="figure" style="text-align: center">
+<img src="figure/peaks.Rmd/peak-annot-condition-1.png" alt="Annotation of concensus peaks per condition" width="2700" />
+<p class="caption">
+Annotation of concensus peaks per condition
+</p>
+</div>
+<p><a href="data:application/pdf;base64,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sl4ymuOWU5PzJjc690iecp4wb2C52fJNyyfyffO/XoFawV3RW6BbsLZgdKXnyvpV0Kqlq3pX668uWj2+xm/NgbWEtWlrfyi0LiwvfLkuZl1PkVbRmqKx9X7rW4sVikXFNza4bKjbiNoo2Di4ae6mqk0fS3glF0utSytK32/mbr74lc1XlV992pK0ZbDMoWzPVsxW4dbr29y3HShXLs8vH9sesr1zB2NHyY6XO5fsvFBhV1G3i7BLsktaGVzZXWVQtbXqfXVK9UiNV017rWbtptrXu3m7r+zx2NNWp1VXWvdur2DvzXq/+s4Go4aKfZh9OfseNkY39n/N+rq5SaOptOnDfuF+6YGIA33Njs3NLZotZa1wq6R18mDCwcvfeH/T3cZsq2+nt5ceAockhx5/m/jt9cNBh3uPsI60fWf4XW0HtaOkE+pc3jnVldIl7Y7rHj4aeLS3x6Wn43vL7/cf0z1Wc1zleNkJwomiE59O5p+cPpV16unp5NNjvUt675yJPXOtL7xv8GzQ2fPnfM+d6ffsP3ne9fyxC84Xjl5kXey65HCpc8B+oOMH+x86Bh0GO4cch7ovO13uGZ43fOKK+5XTV72vnrsWcO3SyPyR4etR12/eSLghvcm7+ehW+q3nt3Nuz9xZcxd9t+Se0r2K+5r3G340/bFd6iA9Puo9OvBgwYM7Y9yxJz9l//R+vOgh+WHFhM5E8yPbR8cmfScvP174ePxJ1pOZp8U/K/9c+8zk2Xe/ePwyMBU7Nf5c9PzTr5tfqL/Y/9LuZe902PT9VxmvZl6XvFF/c+At623/u5h3EzO577HvKz+Yfuj5GPTx7qeMT59+A/eE8/tlbmRzdHJlYW0KZW5kb2JqCjkgMCBvYmoKPDwKL1R5cGUgL0VuY29kaW5nIC9CYXNlRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovRGlmZmVyZW5jZXMgWyA0NS9taW51cyA5Ni9xdW90ZWxlZnQKMTQ0L2RvdGxlc3NpIC9ncmF2ZSAvYWN1dGUgL2NpcmN1bWZsZXggL3RpbGRlIC9tYWNyb24gL2JyZXZlIC9kb3RhY2NlbnQKL2RpZXJlc2lzIC8ubm90ZGVmIC9yaW5nIC9jZWRpbGxhIC8ubm90ZGVmIC9odW5nYXJ1bWxhdXQgL29nb25layAvY2Fyb24gL3NwYWNlXQo+PgplbmRvYmoKMTAgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9OYW1lIC9GMiAvQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgOSAwIFIgPj4KZW5kb2JqCnhyZWYKMCAxMQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMjEgMDAwMDAgbiAKMDAwMDAwMDE2MyAwMDAwMCBuIAowMDAwMDAxMzI4IDAwMDAwIG4gCjAwMDAwMDE0MTIgMDAwMDAgbiAKMDAwMDAwMTUyNCAwMDAwMCBuIAowMDAwMDAxNTU3IDAwMDAwIG4gCjAwMDAwMDAyMTIgMDAwMDAgbiAKMDAwMDAwMDI5MiAwMDAwMCBuIAowMDAwMDA0MjUyIDAwMDAwIG4gCjAwMDAwMDQ1MDkgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAxMSAvSW5mbyAxIDAgUiAvUm9vdCAyIDAgUiA+PgpzdGFydHhyZWYKNDYwNgolJUVPRgo=" download="peak-annot-condition-1.pdf">Download
+peak-annot-condition-1.pdf</a></p>
+</div>
+</div>
+<div id="appendix" class="section level1">
+<h1>Appendix</h1>
+<div id="all-code-used-in-this-analysis" class="section level2">
+<h2>All Code used in this analysis</h2>
+<div id="chunk-seed-set-by-workflowr" class="section level4">
+<h4>Chunk: <code>seed-set-by-workflowr</code></h4>
+<pre class="r"><code>set.seed(20260903)
+</code></pre>
+</div>
+<div id="chunk-setup" class="section level4">
+<h4>Chunk: <code>setup</code></h4>
+<pre class="r"><code>options(bitmapType=&#39;cairo&#39;)
+library(knitr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(ComplexHeatmap)
+library(ggrepel)
+library(ggpubr)
+library(ggplotify)
+library(ggvenn)
+library(ggseqlogo)
+library(patchwork)
+library(viridis)
+library(formatR)
+library(sva)
+if (!requireNamespace(&quot;downloadthis&quot;, quietly = TRUE)) {
+  install.packages(&quot;downloadthis&quot;)
+}
+library(downloadthis)
+
+knitr::opts_chunk$set(
+  echo = F,
+  dpi = 150,
+  error=FALSE,
+  warning = F,
+  dev = c(&quot;png&quot;,&quot;pdf&quot;),
+  message = F)
+</code></pre>
+</div>
+<div id="chunk-setup2" class="section level4">
+<h4>Chunk: <code>setup2</code></h4>
+<pre class="r"><code>#Create directories for analysis
+analysis.path&lt;-&quot;output/&quot;
+if(!dir.exists(analysis.path))
+  dir.create(analysis.path,showWarnings = T,recursive = T)
+analysis.tables&lt;-file.path(&quot;docs/tables/&quot;)
+if(!dir.exists(analysis.tables))
+  dir.create(analysis.tables, recursive = T)
+plots.dir &lt;- file.path(&quot;docs/plots/&quot;)
+if(!dir.exists(plots.dir))
+  dir.create(plots.dir, recursive = T)
+source(&quot;code/globalfun.R&quot;)
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-1" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-1</code></h4>
+<pre class="r"><code>knitr::opts_chunk$set(fig.path = plots.dir)
+# custom hook: after each plot chunk, append a download link
+knitr::knit_hooks$set(
+  plot = function(x, options) {
+    xx &lt;- gsub(&quot;png$&quot;, &quot;pdf&quot;, x)
+    fig_link &lt;- xfun::embed_file(xx, text = paste0(&quot;Download &quot;, basename(xx)))
+    paste0(knitr::hook_plot_md(x, options), &quot;\n\n&quot;, fig_link, &quot;\n&quot;)
+  }
+)
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-2" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-2</code></h4>
+<pre class="r"><code>sample.sheet&lt;-read.csv(&quot;output/NFCore_ATACseq/pipeline_info/samplesheet.valid.csv&quot;,header=T)
+sample.sheet$group&lt;-gsub(&quot;_REP.*&quot;,&quot;&quot;,sample.sheet$sample)
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-3" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-3</code></h4>
+<pre class="r"><code>load(&quot;output/processed_data.RData&quot;)
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-4" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-4</code></h4>
+<pre class="r"><code>peakcaller = list(&quot;macs2&quot; = &quot;narrowPeak&quot;)
+path2peaks &lt;- &quot;output/NFCore_ATACseq//bwa/merged_library/macs2/narrow_peak/&quot;
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-5" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-5</code></h4>
+<pre class="r"><code>peakN = c()
+peakWidth = c()
+for (samp in gsub(&quot;_T1&quot;, &quot;&quot;, sample.sheet$sample)) {
+  for (caller in names(peakcaller)) {
+    peakInfo = read.table(
+      paste0(path2peaks, &quot;/&quot;,samp,&quot;.mLb.clN_peaks.narrowPeak&quot;),
+      header = FALSE,
+      fill = TRUE
+    )  %&gt;% mutate(width = abs(V3 - V2))
+    peakN = data.frame(
+      peakN = nrow(peakInfo),
+      Caller = caller,
+      Group = gsub(&quot;_R.*&quot;, &quot;&quot;, samp),
+      Sample = samp,
+      Replicate = gsub(&quot;.*_&quot;, &quot;&quot;, samp)
+    ) %&gt;% rbind(peakN, .)
+    peakWidth = data.frame(
+      width = peakInfo$width,
+      Group = gsub(&quot;_R.*&quot;, &quot;&quot;, samp),
+      Sample = samp,
+      Replicate = gsub(&quot;.*_&quot;, &quot;&quot;, samp)
+    )  %&gt;% rbind(peakWidth, .)
+  }
+}
+save(peakN,peakWidth, file = &quot;output/peak_counts.RData&quot;)
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-6" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-6</code></h4>
+<pre class="r"><code>load(&quot;output/peak_counts.RData&quot;)
+generate_datatable(
+  peakN[,c(&quot;Sample&quot;,&quot;Group&quot;,&quot;peakN&quot;)],
+  caption = &quot;Total number of peaks per replicate&quot;,extra.options = NULL
+)
+</code></pre>
+</div>
+<div id="chunk-num-peaks" class="section level4">
+<h4>Chunk: <code>num-peaks</code></h4>
+<pre class="r"><code>ggplot(peakN, aes(
+  x = Sample, y = peakN,fill=Group)) +
+  geom_col(position = position_dodge(1)) +
+  coord_flip() + 
+  scale_y_continuous(labels = scales::label_number(
+    scale_cut = scales::cut_short_scale())) +
+  theme_minimal() +  
+  geom_text(
+    aes(label = paste0(peakN/1000,&quot;k&quot;)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-7" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-7</code></h4>
+<pre class="r"><code>library(GenomicRanges)
+samples &lt;- unique(sample.sheet$group)
+peakOverlap_df_list &lt;- list()
+peakOverlap.list &lt;- list()
+
+for (caller in names(peakcaller)) {
+  # Initialize the nested list for this specific caller to prevent subscript errors
+  peakOverlap.list[[caller]] &lt;- list() 
+  
+  for (samp in samples) {
+    # Extract replicates for the current group
+    repL &lt;- gsub(&quot;_T1&quot;, &quot;&quot;, sample.sheet$sample[sample.sheet$group == samp])
+    
+    # Store GRanges for each replicate in a temporary list
+    gr_list &lt;- list()
+    
+    for (repl in repL) {
+      # It&#39;s a good idea to construct the file path explicitly and safely
+      file_path &lt;- file.path(path2peaks, paste0(repl, &quot;.mLb.clN_peaks.narrowPeak&quot;))
+      
+      peakInfo &lt;- read.table(file_path, header = FALSE, fill = TRUE)
+      
+      gr_list[[repl]] &lt;- GRanges(
+        seqnames = peakInfo$V1,
+        ranges = IRanges(start = peakInfo$V2, end = peakInfo$V3),
+        strand = &quot;*&quot;
+      )
+    }
+    
+    # 2. Get reproducible peaks across ALL replicates using Reduce and subsetByOverlaps
+    if (length(gr_list) &gt; 0) {
+      overlap.gr &lt;- Reduce(subsetByOverlaps, gr_list)
+    } else {
+      overlap.gr &lt;- GRanges()
+    }
+    
+    # Store the overlapping GRanges object
+    peakOverlap.list[[caller]][[samp]] &lt;- overlap.gr
+    
+    # Store the metrics as a single-row dataframe in our list
+    list_name &lt;- paste(caller, samp, sep = &quot;_&quot;)
+    peakOverlap_df_list[[list_name]] &lt;- data.frame(
+      Group = samp,
+      Caller = caller,
+      peakReprod = length(overlap.gr)
+    )
+  }
+}
+
+# 3. Combine all iteration dataframes efficiently
+peakOverlap &lt;- bind_rows(peakOverlap_df_list)
+
+# 4. Join and calculate metrics
+# Note: Added &#39;Caller&#39; to the join conditions to prevent duplication if testing multiple callers
+peakReprod &lt;- left_join(peakN, peakOverlap, by = c(&quot;Group&quot;, &quot;Caller&quot;)) %&gt;% 
+  mutate(peakReprodRate = (peakReprod / peakN) * 100)
+
+# 5. Final Selection
+final_metrics &lt;- peakReprod %&gt;% 
+  dplyr::select(
+    Group,
+    Caller,
+    Replicate, # Assuming this exists in your original peakN dataframe
+    peakN,
+    peakReprodNum = peakReprod,
+    peakReprodRate
+  )
+save(peakReprod,file=&quot;output/peakReprod.RData&quot;)
+</code></pre>
+</div>
+<div id="chunk-peak-reproducibility-plot" class="section level4">
+<h4>Chunk: <code>peak-reproducibility-plot</code></h4>
+<pre class="r"><code>load(&quot;output/peakReprod.RData&quot;)
+ggplot(peakReprod, aes(
+  x = Sample, y = peakReprodRate,fill=Group)) +
+  geom_col(position = position_dodge(1)) +
+  coord_flip() + 
+  scale_y_continuous(labels = scales::label_number(
+    scale_cut = scales::cut_short_scale())) +
+  labs(title = &quot;Peak reproducibility %&quot;,
+       x = &quot;Sample&quot;,
+       y = &quot;Reproducibility (%)&quot;) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+</code></pre>
+</div>
+<div id="chunk-number-concensus-peaks" class="section level4">
+<h4>Chunk: <code>number-concensus-peaks</code></h4>
+<pre class="r"><code>plot_data &lt;- data.frame(
+  Sample = rownames(peak_count.stats_conc),
+  Peak_count = diag(peak_count.stats_conc)
+)
+ggplot(plot_data,
+       aes(x = Sample, y = Peak_count,fill = Sample)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = &quot;&quot;,
+       x = &quot;&quot;,
+       y = &quot;Peak count&quot;) +
+  geom_text(aes(label = paste0(round(Peak_count / 1000, 2), &quot;k&quot;)),
+            position = position_stack(vjust = 0.5),
+            size = 3) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+</code></pre>
+</div>
+<div id="chunk-unnamed-chunk-8" class="section level4">
+<h4>Chunk: <code>unnamed-chunk-8</code></h4>
+<pre class="r"><code>peak.qual$group &lt;-gsub(&quot;_REP.*&quot;,&quot;&quot;,peak.qual$Sample)
+colnames(peak.qual)[ncol(peak.qual)-1]&lt;-&quot;FRiP&quot;
+</code></pre>
+</div>
+<div id="chunk-frip-library" class="section level4">
+<h4>Chunk: <code>FRiP-library</code></h4>
+<pre class="r"><code>ggplot(peak.qual, aes(
+  x = Sample, y = FRiP,fill=group)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = &quot;FRiP&quot;,
+       x = &quot;&quot;,
+       y = &quot;FRiP&quot;,
+       fill= &quot;group&quot;) +
+  geom_text(
+    aes(label = paste0(FRiP,&quot;%&quot;)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+</code></pre>
+</div>
+<div id="chunk-frip-condition" class="section level4">
+<h4>Chunk: <code>FRiP-condition</code></h4>
+<pre class="r"><code>ggplot(frip.plot_data, aes(
+  x = Sample, y = FRiP,fill=Sample)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = &quot;FRiP&quot;,
+       x = &quot;Sample&quot;,
+       y = &quot;FRiP&quot;,
+       fill= &quot;Sample&quot;) +
+  geom_text(
+    aes(label = paste0(round(FRiP,1),&quot;%&quot;)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.5)
+  )
+</code></pre>
+</div>
+<div id="chunk-peak-annotation-barplot" class="section level4">
+<h4>Chunk: <code>peak-annotation-barplot</code></h4>
+<pre class="r"><code>ggplot(peak.annotation_stats, aes(
+  x = Sample, y = Peak_count,fill=Stats)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = &quot;&quot;,
+       x = &quot;&quot;,
+       y = &quot;Peak count&quot;,
+       fill= &quot;Annotation&quot;) +
+  geom_text(
+    aes(label = paste0(round(Peak_count/1000,2),&quot;k&quot;)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+    axis.text.y = element_text(
+      size = 14
+    ),
+    plot.title = element_text(hjust = 0.8)
+  )
+</code></pre>
+</div>
+<div id="chunk-peak-annot-condition" class="section level4">
+<h4>Chunk: <code>peak-annot-condition</code></h4>
+<pre class="r"><code>annotation.conc.stats$group &lt;- gsub(&quot;_REP.*&quot;,&quot;&quot;,annotation.conc.stats$Sample)
+ggplot(annotation.conc.stats, aes(
+  x = Sample, y = Peak_count,fill=Stats)) +
+  geom_col() +
+  coord_flip() + 
+  labs(title = &quot;&quot;,
+       x = &quot;&quot;,
+       y = &quot;Peak count&quot;,
+       fill= &quot;Annotation&quot;) +
+  geom_text(
+    aes(label = paste0(round(Peak_count/1000,2),&quot;k&quot;)),
+    position = position_stack(vjust = 0.5),
+    size = 3
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(
+      angle = 0,
+      hjust = 1,
+      vjust = 1
+    ),
+   axis.text.y = element_text(
+      size = 12 
+    ),
+    plot.title = element_text(hjust = 0.8)
+  )
+</code></pre>
+</div>
+<div id="chunk-session-info-chunk-inserted-by-workflowr"
+class="section level4">
+<h4>Chunk: <code>session-info-chunk-inserted-by-workflowr</code></h4>
+<pre class="r"><code>sessionInfo()
+</code></pre>
+</div>
+</div>
+<div id="session-information" class="section level2">
+<h2>Session Information</h2>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre><code>R version 4.5.1 (2025-06-13)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.5 LTS
+
+Matrix products: default
+BLAS:   /mnt/software/apps/R/4.5.1/lib/R/lib/libRblas.so 
+LAPACK: /mnt/software/apps/R/4.5.1/lib/R/lib/libRlapack.so;  LAPACK version 3.12.1
+
+locale:
+ [1] LC_CTYPE=en_AU.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_AU.UTF-8        LC_COLLATE=en_AU.UTF-8    
+ [5] LC_MONETARY=en_AU.UTF-8    LC_MESSAGES=en_AU.UTF-8   
+ [7] LC_PAPER=en_AU.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_AU.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Australia/Melbourne
+tzcode source: system (glibc)
+
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] downloadthis_0.5.0    sva_3.56.0            BiocParallel_1.42.2  
+ [4] genefilter_1.90.0     mgcv_1.9-4            nlme_3.1-170         
+ [7] formatR_1.14          viridis_0.6.5         viridisLite_0.4.3    
+[10] patchwork_1.3.2       ggseqlogo_0.2.2       ggvenn_0.1.19        
+[13] ggplotify_0.1.3       ggpubr_1.0.0          ggrepel_0.9.8        
+[16] ComplexHeatmap_2.24.1 tidyr_1.3.2           dplyr_1.2.1          
+[19] ggplot2_4.0.3         knitr_1.51            workflowr_1.7.2      
+
+loaded via a namespace (and not attached):
+  [1] RColorBrewer_1.1-3      rstudioapi_0.19.0       jsonlite_2.0.0         
+  [4] shape_1.4.6.1           magrittr_2.0.5          farver_2.1.2           
+  [7] rmarkdown_2.31          GlobalOptions_0.1.4     fs_2.1.0               
+ [10] vctrs_0.7.3             memoise_2.0.1           rstatix_1.1.0          
+ [13] htmltools_0.5.9         broom_1.0.13            Formula_1.2-6          
+ [16] gridGraphics_0.5-1      sass_0.4.10             bslib_0.12.0           
+ [19] htmlwidgets_1.6.4       cachem_1.1.0            whisker_0.4.1          
+ [22] mime_0.13               lifecycle_1.0.5         iterators_1.0.14       
+ [25] pkgconfig_2.0.3         Matrix_1.7-6            R6_2.6.1               
+ [28] fastmap_1.2.0           GenomeInfoDbData_1.2.14 MatrixGenerics_1.20.0  
+ [31] clue_0.3-68             digest_0.6.39           colorspace_2.1-3       
+ [34] AnnotationDbi_1.70.0    S4Vectors_0.50.2        ps_1.9.3               
+ [37] rprojroot_2.1.1         crosstalk_1.2.2         RSQLite_3.53.3         
+ [40] labeling_0.4.3          httr_1.4.8              abind_1.4-8            
+ [43] compiler_4.5.1          bit64_4.8.4             withr_3.0.3            
+ [46] doParallel_1.0.17       S7_0.2.2                backports_1.5.1        
+ [49] carData_3.0-6           DBI_1.3.0               ggsignif_0.6.4         
+ [52] rappdirs_0.3.4          rjson_0.2.23            tools_4.5.1            
+ [55] otel_0.2.0              httpuv_1.6.17           glue_1.8.1             
+ [58] callr_3.8.0             promises_1.5.0          getPass_0.2-4          
+ [61] cluster_2.1.8.3         generics_0.1.4          gtable_0.3.6           
+ [64] car_3.1-5               XVector_0.48.0          BiocGenerics_0.54.1    
+ [67] foreach_1.5.2           pillar_1.11.1           stringr_1.6.0          
+ [70] yulab.utils_0.2.4       limma_3.64.3            later_1.4.8            
+ [73] circlize_0.4.18         splines_4.5.1           lattice_0.23-1         
+ [76] survival_3.8-11         bit_4.6.0               annotate_1.86.1        
+ [79] tidyselect_1.2.1        locfit_1.5-9.12         Biostrings_2.76.0      
+ [82] git2r_0.36.2            gridExtra_2.3.1         IRanges_2.42.0         
+ [85] edgeR_4.6.3             stats4_4.5.1            xfun_0.60              
+ [88] Biobase_2.68.0          statmod_1.5.2           matrixStats_1.5.0      
+ [91] DT_0.34.0               stringi_1.8.9           UCSC.utils_1.4.0       
+ [94] yaml_2.3.12             evaluate_1.0.5          codetools_0.2-20       
+ [97] tibble_3.3.1            cli_3.6.6               xtable_1.8-8           
+[100] processx_3.9.0          jquerylib_0.1.4         dichromat_2.0-1        
+[103] Rcpp_1.1.2              GenomeInfoDb_1.44.3     png_0.1-9              
+[106] XML_3.99-0.24           parallel_4.5.1          blob_1.3.0             
+[109] scales_1.4.0            purrr_1.2.2             crayon_1.5.3           
+[112] GetoptLong_1.1.1        rlang_1.3.0             KEGGREST_1.48.1        </code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

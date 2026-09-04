@@ -1,0 +1,177 @@
+﻿"Section Name"	"Series 1 (y)"	"Series 1 (value)"
+"Basic Statistics"	"Healthy_REP1_T1_1"	1
+"Basic Statistics"	"Healthy_REP1_T1_2"	1
+"Basic Statistics"	"Healthy_REP2_T1_1"	1
+"Basic Statistics"	"Healthy_REP2_T1_2"	1
+"Basic Statistics"	"Healthy_REP3_T1_1"	1
+"Basic Statistics"	"Healthy_REP3_T1_2"	1
+"Basic Statistics"	"Patient_REP1_T1_1"	1
+"Basic Statistics"	"Patient_REP1_T1_2"	1
+"Basic Statistics"	"Patient_REP2_T1_1"	1
+"Basic Statistics"	"Patient_REP2_T1_2"	1
+"Basic Statistics"	"Patient_REP3_T1_1"	1
+"Basic Statistics"	"Patient_REP3_T1_2"	1
+"Basic Statistics"	"Patient_REP4_T1_1"	1
+"Basic Statistics"	"Patient_REP4_T1_2"	1
+"Basic Statistics"	"Patient_REP5_T1_1"	1
+"Basic Statistics"	"Patient_REP5_T1_2"	1
+"Per Base Sequence Quality"	"Healthy_REP1_T1_1"	1
+"Per Base Sequence Quality"	"Healthy_REP1_T1_2"	1
+"Per Base Sequence Quality"	"Healthy_REP2_T1_1"	1
+"Per Base Sequence Quality"	"Healthy_REP2_T1_2"	1
+"Per Base Sequence Quality"	"Healthy_REP3_T1_1"	1
+"Per Base Sequence Quality"	"Healthy_REP3_T1_2"	1
+"Per Base Sequence Quality"	"Patient_REP1_T1_1"	1
+"Per Base Sequence Quality"	"Patient_REP1_T1_2"	1
+"Per Base Sequence Quality"	"Patient_REP2_T1_1"	1
+"Per Base Sequence Quality"	"Patient_REP2_T1_2"	1
+"Per Base Sequence Quality"	"Patient_REP3_T1_1"	1
+"Per Base Sequence Quality"	"Patient_REP3_T1_2"	1
+"Per Base Sequence Quality"	"Patient_REP4_T1_1"	1
+"Per Base Sequence Quality"	"Patient_REP4_T1_2"	1
+"Per Base Sequence Quality"	"Patient_REP5_T1_1"	1
+"Per Base Sequence Quality"	"Patient_REP5_T1_2"	1
+"Per Tile Sequence Quality"	"Healthy_REP1_T1_1"	1
+"Per Tile Sequence Quality"	"Healthy_REP1_T1_2"	1
+"Per Tile Sequence Quality"	"Healthy_REP2_T1_1"	1
+"Per Tile Sequence Quality"	"Healthy_REP2_T1_2"	1
+"Per Tile Sequence Quality"	"Healthy_REP3_T1_1"	1
+"Per Tile Sequence Quality"	"Healthy_REP3_T1_2"	1
+"Per Tile Sequence Quality"	"Patient_REP1_T1_1"	1
+"Per Tile Sequence Quality"	"Patient_REP1_T1_2"	1
+"Per Tile Sequence Quality"	"Patient_REP2_T1_1"	1
+"Per Tile Sequence Quality"	"Patient_REP2_T1_2"	1
+"Per Tile Sequence Quality"	"Patient_REP3_T1_1"	1
+"Per Tile Sequence Quality"	"Patient_REP3_T1_2"	1
+"Per Tile Sequence Quality"	"Patient_REP4_T1_1"	1
+"Per Tile Sequence Quality"	"Patient_REP4_T1_2"	1
+"Per Tile Sequence Quality"	"Patient_REP5_T1_1"	1
+"Per Tile Sequence Quality"	"Patient_REP5_T1_2"	1
+"Per Sequence Quality Scores"	"Healthy_REP1_T1_1"	1
+"Per Sequence Quality Scores"	"Healthy_REP1_T1_2"	1
+"Per Sequence Quality Scores"	"Healthy_REP2_T1_1"	1
+"Per Sequence Quality Scores"	"Healthy_REP2_T1_2"	1
+"Per Sequence Quality Scores"	"Healthy_REP3_T1_1"	1
+"Per Sequence Quality Scores"	"Healthy_REP3_T1_2"	1
+"Per Sequence Quality Scores"	"Patient_REP1_T1_1"	1
+"Per Sequence Quality Scores"	"Patient_REP1_T1_2"	1
+"Per Sequence Quality Scores"	"Patient_REP2_T1_1"	1
+"Per Sequence Quality Scores"	"Patient_REP2_T1_2"	1
+"Per Sequence Quality Scores"	"Patient_REP3_T1_1"	1
+"Per Sequence Quality Scores"	"Patient_REP3_T1_2"	1
+"Per Sequence Quality Scores"	"Patient_REP4_T1_1"	1
+"Per Sequence Quality Scores"	"Patient_REP4_T1_2"	1
+"Per Sequence Quality Scores"	"Patient_REP5_T1_1"	1
+"Per Sequence Quality Scores"	"Patient_REP5_T1_2"	1
+"Per Base Sequence Content"	"Healthy_REP1_T1_1"	0.25
+"Per Base Sequence Content"	"Healthy_REP1_T1_2"	0.25
+"Per Base Sequence Content"	"Healthy_REP2_T1_1"	0.25
+"Per Base Sequence Content"	"Healthy_REP2_T1_2"	0.25
+"Per Base Sequence Content"	"Healthy_REP3_T1_1"	0.25
+"Per Base Sequence Content"	"Healthy_REP3_T1_2"	0.25
+"Per Base Sequence Content"	"Patient_REP1_T1_1"	0.25
+"Per Base Sequence Content"	"Patient_REP1_T1_2"	0.25
+"Per Base Sequence Content"	"Patient_REP2_T1_1"	0.25
+"Per Base Sequence Content"	"Patient_REP2_T1_2"	0.25
+"Per Base Sequence Content"	"Patient_REP3_T1_1"	0.25
+"Per Base Sequence Content"	"Patient_REP3_T1_2"	0.25
+"Per Base Sequence Content"	"Patient_REP4_T1_1"	0.25
+"Per Base Sequence Content"	"Patient_REP4_T1_2"	0.25
+"Per Base Sequence Content"	"Patient_REP5_T1_1"	0.25
+"Per Base Sequence Content"	"Patient_REP5_T1_2"	0.25
+"Per Sequence GC Content"	"Healthy_REP1_T1_1"	0.5
+"Per Sequence GC Content"	"Healthy_REP1_T1_2"	0.5
+"Per Sequence GC Content"	"Healthy_REP2_T1_1"	0.5
+"Per Sequence GC Content"	"Healthy_REP2_T1_2"	0.5
+"Per Sequence GC Content"	"Healthy_REP3_T1_1"	0.5
+"Per Sequence GC Content"	"Healthy_REP3_T1_2"	1
+"Per Sequence GC Content"	"Patient_REP1_T1_1"	1
+"Per Sequence GC Content"	"Patient_REP1_T1_2"	1
+"Per Sequence GC Content"	"Patient_REP2_T1_1"	0.5
+"Per Sequence GC Content"	"Patient_REP2_T1_2"	0.5
+"Per Sequence GC Content"	"Patient_REP3_T1_1"	0.5
+"Per Sequence GC Content"	"Patient_REP3_T1_2"	0.5
+"Per Sequence GC Content"	"Patient_REP4_T1_1"	0.5
+"Per Sequence GC Content"	"Patient_REP4_T1_2"	0.5
+"Per Sequence GC Content"	"Patient_REP5_T1_1"	0.5
+"Per Sequence GC Content"	"Patient_REP5_T1_2"	0.5
+"Per Base N Content"	"Healthy_REP1_T1_1"	1
+"Per Base N Content"	"Healthy_REP1_T1_2"	1
+"Per Base N Content"	"Healthy_REP2_T1_1"	1
+"Per Base N Content"	"Healthy_REP2_T1_2"	1
+"Per Base N Content"	"Healthy_REP3_T1_1"	1
+"Per Base N Content"	"Healthy_REP3_T1_2"	1
+"Per Base N Content"	"Patient_REP1_T1_1"	1
+"Per Base N Content"	"Patient_REP1_T1_2"	1
+"Per Base N Content"	"Patient_REP2_T1_1"	1
+"Per Base N Content"	"Patient_REP2_T1_2"	1
+"Per Base N Content"	"Patient_REP3_T1_1"	1
+"Per Base N Content"	"Patient_REP3_T1_2"	1
+"Per Base N Content"	"Patient_REP4_T1_1"	1
+"Per Base N Content"	"Patient_REP4_T1_2"	1
+"Per Base N Content"	"Patient_REP5_T1_1"	1
+"Per Base N Content"	"Patient_REP5_T1_2"	1
+"Sequence Length Distribution"	"Healthy_REP1_T1_1"	0.5
+"Sequence Length Distribution"	"Healthy_REP1_T1_2"	0.5
+"Sequence Length Distribution"	"Healthy_REP2_T1_1"	0.5
+"Sequence Length Distribution"	"Healthy_REP2_T1_2"	0.5
+"Sequence Length Distribution"	"Healthy_REP3_T1_1"	0.5
+"Sequence Length Distribution"	"Healthy_REP3_T1_2"	0.5
+"Sequence Length Distribution"	"Patient_REP1_T1_1"	0.5
+"Sequence Length Distribution"	"Patient_REP1_T1_2"	0.5
+"Sequence Length Distribution"	"Patient_REP2_T1_1"	0.5
+"Sequence Length Distribution"	"Patient_REP2_T1_2"	0.5
+"Sequence Length Distribution"	"Patient_REP3_T1_1"	0.5
+"Sequence Length Distribution"	"Patient_REP3_T1_2"	0.5
+"Sequence Length Distribution"	"Patient_REP4_T1_1"	0.5
+"Sequence Length Distribution"	"Patient_REP4_T1_2"	0.5
+"Sequence Length Distribution"	"Patient_REP5_T1_1"	0.5
+"Sequence Length Distribution"	"Patient_REP5_T1_2"	0.5
+"Sequence Duplication Levels"	"Healthy_REP1_T1_1"	0.25
+"Sequence Duplication Levels"	"Healthy_REP1_T1_2"	0.25
+"Sequence Duplication Levels"	"Healthy_REP2_T1_1"	0.25
+"Sequence Duplication Levels"	"Healthy_REP2_T1_2"	0.25
+"Sequence Duplication Levels"	"Healthy_REP3_T1_1"	0.25
+"Sequence Duplication Levels"	"Healthy_REP3_T1_2"	0.25
+"Sequence Duplication Levels"	"Patient_REP1_T1_1"	0.25
+"Sequence Duplication Levels"	"Patient_REP1_T1_2"	0.25
+"Sequence Duplication Levels"	"Patient_REP2_T1_1"	0.25
+"Sequence Duplication Levels"	"Patient_REP2_T1_2"	0.25
+"Sequence Duplication Levels"	"Patient_REP3_T1_1"	0.25
+"Sequence Duplication Levels"	"Patient_REP3_T1_2"	0.25
+"Sequence Duplication Levels"	"Patient_REP4_T1_1"	0.25
+"Sequence Duplication Levels"	"Patient_REP4_T1_2"	0.25
+"Sequence Duplication Levels"	"Patient_REP5_T1_1"	0.25
+"Sequence Duplication Levels"	"Patient_REP5_T1_2"	0.25
+"Overrepresented Sequences"	"Healthy_REP1_T1_1"	0.5
+"Overrepresented Sequences"	"Healthy_REP1_T1_2"	0.5
+"Overrepresented Sequences"	"Healthy_REP2_T1_1"	0.5
+"Overrepresented Sequences"	"Healthy_REP2_T1_2"	0.5
+"Overrepresented Sequences"	"Healthy_REP3_T1_1"	1
+"Overrepresented Sequences"	"Healthy_REP3_T1_2"	0.5
+"Overrepresented Sequences"	"Patient_REP1_T1_1"	1
+"Overrepresented Sequences"	"Patient_REP1_T1_2"	0.5
+"Overrepresented Sequences"	"Patient_REP2_T1_1"	1
+"Overrepresented Sequences"	"Patient_REP2_T1_2"	0.5
+"Overrepresented Sequences"	"Patient_REP3_T1_1"	0.5
+"Overrepresented Sequences"	"Patient_REP3_T1_2"	0.5
+"Overrepresented Sequences"	"Patient_REP4_T1_1"	0.5
+"Overrepresented Sequences"	"Patient_REP4_T1_2"	0.5
+"Overrepresented Sequences"	"Patient_REP5_T1_1"	0.5
+"Overrepresented Sequences"	"Patient_REP5_T1_2"	0.5
+"Adapter Content"	"Healthy_REP1_T1_1"	1
+"Adapter Content"	"Healthy_REP1_T1_2"	1
+"Adapter Content"	"Healthy_REP2_T1_1"	1
+"Adapter Content"	"Healthy_REP2_T1_2"	1
+"Adapter Content"	"Healthy_REP3_T1_1"	1
+"Adapter Content"	"Healthy_REP3_T1_2"	1
+"Adapter Content"	"Patient_REP1_T1_1"	1
+"Adapter Content"	"Patient_REP1_T1_2"	1
+"Adapter Content"	"Patient_REP2_T1_1"	1
+"Adapter Content"	"Patient_REP2_T1_2"	1
+"Adapter Content"	"Patient_REP3_T1_1"	1
+"Adapter Content"	"Patient_REP3_T1_2"	1
+"Adapter Content"	"Patient_REP4_T1_1"	1
+"Adapter Content"	"Patient_REP4_T1_2"	1
+"Adapter Content"	"Patient_REP5_T1_1"	1
+"Adapter Content"	"Patient_REP5_T1_2"	1

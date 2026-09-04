@@ -1,0 +1,19 @@
+name: "NK_cells"
+output_dir: ../docs
+navbar:
+  title: "NK_cells"
+  left:
+  - text: Background
+    href: index.html
+  - text: Pre-processing and QC Checks
+    href: preprocessing.html
+  - text: Peak Calling and QC Check
+    href: peaks.html
+  - text: Differential Accessibility Analysis
+    href: differential_analysis.html
+output:
+  workflowr::wflow_html:
+    toc: yes
+    toc_float: yes
+    theme: cosmo
+    highlight: textmate

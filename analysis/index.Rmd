@@ -1,0 +1,36 @@
+---
+title: "Background"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+
+# Abstract
+
+In children and adults, obesity increases the severity of influenza A virus (IAV) infection, although the underlying mechanisms are unclear. Natural killer (NK) cells play a key role in the innate immune responses to IAV and clearance of IAV-infected cells. ‘Trained immunity’ of NK cells (and other innate immune cells) refers to an initial stimulus (i.e. obesity) inducing metabolic and epigenetic changes that make these cells hyperinflammatory upon restimulation (i.e. infection). Here, we test whether obesity in children induces trained immunity in paediatric NK cells. We further assess whether weight loss is sufficient to reverse any trained immunity. In this analysis, we look at the Chromatin changes that NK cells undergo in obesity and after weight loss.
+
+```{r setup}
+knitr::opts_chunk$set(
+  echo = F,
+  dpi = 150,
+  error=FALSE,
+  warning = F,
+  dev = c("png","pdf"),
+  message = F)
+```
+
+```{r}
+source("code/globalfun.R")
+#Load the libraries
+sample.sheet<-read.csv("data/Samplesheet.csv",header=T)
+```
+
+```{r}
+generate_datatable(apply(sample.sheet,2,basename),show.rownames = F,extra.options = NULL)
+```

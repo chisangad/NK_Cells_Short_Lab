@@ -1,0 +1,9 @@
+Sample	Mean Read Length
+Healthy_REP1	63.65686
+Healthy_REP2	64.122079
+Healthy_REP3	64.264141
+Patient_REP1	64.263417
+Patient_REP2	64.27006
+Patient_REP3	63.648179
+Patient_REP4	63.653243
+Patient_REP5	61.063178

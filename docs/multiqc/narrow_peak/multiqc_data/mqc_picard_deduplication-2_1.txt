@@ -1,0 +1,3 @@
+Sample	Unique Pairs
+Healthy	153539466.0
+Patient	285161980.0

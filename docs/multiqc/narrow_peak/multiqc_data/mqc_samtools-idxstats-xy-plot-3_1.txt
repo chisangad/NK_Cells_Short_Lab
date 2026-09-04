@@ -1,0 +1,9 @@
+Sample	Chromosome X	Chromosome Y
+Healthy_REP1	1106716.0	76.0
+Healthy_REP2	1018486.0	118.0
+Healthy_REP3	1472578.0	234.0
+Patient_REP1	1500630.0	348.0
+Patient_REP2	1531802.0	310.0
+Patient_REP3	1552556.0	278.0
+Patient_REP4	1452856.0	352.0
+Patient_REP5	1094862.0	142.0

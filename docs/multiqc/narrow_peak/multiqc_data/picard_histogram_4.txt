@@ -1,0 +1,9 @@
+Sample	12	24	40	12	24	40	12	24	40	12	24	40	12	24	40	12	24	40	12	24	40	12	24	40
+Healthy_REP1																								
+Healthy_REP2																								
+Healthy_REP3																								
+Patient_REP1																								
+Patient_REP2																								
+Patient_REP3																								
+Patient_REP4																								
+Patient_REP5																								

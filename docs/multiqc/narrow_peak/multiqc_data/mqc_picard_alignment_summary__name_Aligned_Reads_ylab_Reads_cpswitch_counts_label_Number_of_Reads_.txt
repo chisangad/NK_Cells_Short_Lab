@@ -1,0 +1,9 @@
+Sample	Aligned Reads
+Healthy_REP1	24157561.0
+Healthy_REP2	22266338.0
+Healthy_REP3	30345834.0
+Patient_REP1	28890940.0
+Patient_REP2	30678930.0
+Patient_REP3	31275503.0
+Patient_REP4	28428474.0
+Patient_REP5	23307143.0
