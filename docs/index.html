@@ -376,7 +376,7 @@ div.tocify {
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
 <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
-workflowr <span class="glyphicon glyphicon-ok text-success"
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
 aria-hidden="true"></span>
 </button>
 </p>
@@ -387,8 +387,8 @@ aria-hidden="true"></span>
 </li>
 <li>
 <a data-toggle="tab" href="#checks"> Checks <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-</a>
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -397,13 +397,13 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2026-09-04
+<strong>Last updated:</strong> 2026-09-09
 </p>
 <p>
 <strong>Checks:</strong> <span
-class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
 <span class="glyphicon glyphicon-exclamation-sign text-danger"
-aria-hidden="true"></span> 0
+aria-hidden="true"></span> 1
 </p>
 <p>
 <strong>Knit directory:</strong> <code>NK_cells/</code> <span
@@ -426,18 +426,21 @@ versions</em> tab lists the development history.
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
-<span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
-</a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate"
+<div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git
-repository, you know the exact version of the code that produced these
-results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
 </div>
 </div>
 </div>
@@ -528,15 +531,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomchisangadNKCellsShortLabtree8f403c2a522e0798d9c8a20ed9a9f1aeb0255498targetblank8f403c2a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomchisangadNKCellsShortLabtreef6e162ac7adff673ee734e9e2d08643040591bdctargetblankf6e162aa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/chisangad/NK_Cells_Short_Lab/tree/8f403c2a522e0798d9c8a20ed9a9f1aeb0255498" target="_blank">8f403c2</a>
+<a href="https://github.com/chisangad/NK_Cells_Short_Lab/tree/f6e162ac7adff673ee734e9e2d08643040591bdc" target="_blank">f6e162a</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomchisangadNKCellsShortLabtree8f403c2a522e0798d9c8a20ed9a9f1aeb0255498targetblank8f403c2a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomchisangadNKCellsShortLabtreef6e162ac7adff673ee734e9e2d08643040591bdctargetblankf6e162aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -546,7 +549,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/chisangad/NK_Cells_Short_Lab/tree/8f403c2a522e0798d9c8a20ed9a9f1aeb0255498" target="_blank">8f403c2</a>.
+<a href="https://github.com/chisangad/NK_Cells_Short_Lab/tree/f6e162ac7adff673ee734e9e2d08643040591bdc" target="_blank">f6e162a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -560,13 +563,20 @@ depends on. Below is the status of the Git repository when the results
 were generated:
 </p>
 <pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+
 Untracked files:
     Untracked:  .Rprofile
-    Untracked:  .Rproj.user/
+    Untracked:  .gitignore
     Untracked:  NK_cells.Rproj
     Untracked:  _workflowr.yml
     Untracked:  data/
     Untracked:  output/
+
+Unstaged changes:
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -610,6 +620,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/chisangad/NK_Cells_Short_Lab/f6e162ac7adff673ee734e9e2d08643040591bdc/docs/index.html" target="_blank">f6e162a</a>
+</td>
+<td>
+dchi0030
+</td>
+<td>
+2026-09-04
+</td>
+<td>
+Update index page
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -681,15 +708,8 @@ test whether obesity in children induces trained immunity in paediatric
 NK cells. We further assess whether weight loss is sufficient to reverse
 any trained immunity. In this analysis, we look at the Chromatin changes
 that NK cells undergo in obesity and after weight loss.</p>
-<pre class="r"><code>knitr::opts_chunk$set(
-  echo = F,
-  dpi = 150,
-  error=FALSE,
-  warning = F,
-  dev = c(&quot;png&quot;,&quot;pdf&quot;),
-  message = F)</code></pre>
 <div id="htmlwidget-5787418e8adf801131b3" style="width:100%;height:auto;" class="datatables html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5787418e8adf801131b3">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"data":[["Healthy","Healthy","Healthy","Patient","Patient","Patient","Patient","Patient"],["1_S1_R1_001.fastq.gz","2_S2_R1_001.fastq.gz","4_S3_R1_001.fastq.gz","6_S4_R1_001.fastq.gz","7_S5_R1_001.fastq.gz","8_S6_R1_001.fastq.gz","9_S7_R1_001.fastq.gz","10_S8_R1_001.fastq.gz"],["1_S1_R2_001.fastq.gz","2_S2_R2_001.fastq.gz","4_S3_R2_001.fastq.gz","6_S4_R2_001.fastq.gz","7_S5_R2_001.fastq.gz","8_S6_R2_001.fastq.gz","9_S7_R2_001.fastq.gz","10_S8_R2_001.fastq.gz"],["1","2","3","1","2","3","4","5"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>sample<\/th>\n      <th>fastq_1<\/th>\n      <th>fastq_2<\/th>\n      <th>replicate<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Bfrtip","buttons":["excel","csv","copy"],"columnDefs":[{"name":"sample","targets":0},{"name":"fastq_1","targets":1},{"name":"fastq_2","targets":2},{"name":"replicate","targets":3}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-5787418e8adf801131b3">{"x":{"filter":"none","vertical":false,"extensions":["Buttons"],"data":[["1","2","4","6","7","8","9","10"],["Healthy_REP1","Healthy_REP2","Healthy_REP3","Patient_REP1","Patient_REP2","Patient_REP3","Patient_REP4","Patient_REP5"],["1_S1_R1_001.fastq.gz","2_S2_R1_001.fastq.gz","4_S3_R1_001.fastq.gz","6_S4_R1_001.fastq.gz","7_S5_R1_001.fastq.gz","8_S6_R1_001.fastq.gz","9_S7_R1_001.fastq.gz","10_S8_R1_001.fastq.gz"],["1_S1_R2_001.fastq.gz","2_S2_R2_001.fastq.gz","4_S3_R2_001.fastq.gz","6_S4_R2_001.fastq.gz","7_S5_R2_001.fastq.gz","8_S6_R2_001.fastq.gz","9_S7_R2_001.fastq.gz","10_S8_R2_001.fastq.gz"],["1","2","3","1","2","3","4","5"],["0","0","0","0","0","0","0","0"],[null,null,null,null,null,null,null,null],["Healthy","Healthy","Healthy","Patient","Patient","Patient","Patient","Patient"],["KDVM K177","KDVM K176","KVDM K215","COBRA OBR-00162954A","COBRA OBR-00162967K","COBRA OBR-00150717F","COBRA OBR-00178389K","COBRA OBR-00150699B"],["11","18","19","11"," 6"," 8","18","10"],["Female","Female","Female","Female","Female","Female","Female","Female"],["16.6","21.8","22.4","35.3","27.0","25.7","38.2","29.6"],[" 0.03","-0.03","-0.03"," 2.57"," 3.13"," 2.44"," 2.61"," 2.40"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Sample.ID<\/th>\n      <th>sample<\/th>\n      <th>fastq_1<\/th>\n      <th>fastq_2<\/th>\n      <th>replicate<\/th>\n      <th>single_end<\/th>\n      <th>control<\/th>\n      <th>group<\/th>\n      <th>Donor.ID<\/th>\n      <th>Age<\/th>\n      <th>Sex<\/th>\n      <th>BMI<\/th>\n      <th>CDC.Z.score<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"dom":"Bfrtip","buttons":["excel","csv","copy"],"scrollX":true,"autoWidth":true,"columnDefs":[{"name":"Sample.ID","targets":0},{"name":"sample","targets":1},{"name":"fastq_1","targets":2},{"name":"fastq_2","targets":3},{"name":"replicate","targets":4},{"name":"single_end","targets":5},{"name":"control","targets":6},{"name":"group","targets":7},{"name":"Donor.ID","targets":8},{"name":"Age","targets":9},{"name":"Sex","targets":10},{"name":"BMI","targets":11},{"name":"CDC.Z.score","targets":12}],"order":[],"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -721,21 +741,25 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] workflowr_1.7.2
+ [1] lubridate_1.9.5 forcats_1.0.1   stringr_1.6.0   dplyr_1.2.1    
+ [5] purrr_1.2.2     readr_2.2.0     tidyr_1.3.2     tibble_3.3.1   
+ [9] ggplot2_4.0.3   tidyverse_2.0.0 workflowr_1.7.2
 
 loaded via a namespace (and not attached):
- [1] jsonlite_2.0.0    compiler_4.5.1    promises_1.5.0    Rcpp_1.1.2       
- [5] stringr_1.6.0     git2r_0.36.2      callr_3.8.0       later_1.4.8      
- [9] jquerylib_0.1.4   yaml_2.3.12       fastmap_1.2.0     R6_2.6.1         
-[13] knitr_1.51        htmlwidgets_1.6.4 tibble_3.3.1      rprojroot_2.1.1  
-[17] bslib_0.12.0      pillar_1.11.1     rlang_1.3.0       DT_0.34.0        
-[21] cachem_1.1.0      stringi_1.8.9     httpuv_1.6.17     xfun_0.60        
-[25] getPass_0.2-4     fs_2.1.0          sass_0.4.10       otel_0.2.0       
-[29] cli_3.6.6         magrittr_2.0.5    crosstalk_1.2.2   ps_1.9.3         
-[33] digest_0.6.39     processx_3.9.0    rstudioapi_0.19.0 lifecycle_1.0.5  
-[37] vctrs_0.7.3       evaluate_1.0.5    glue_1.8.1        whisker_0.4.1    
-[41] rmarkdown_2.31    httr_1.4.8        tools_4.5.1       pkgconfig_2.0.3  
-[45] htmltools_0.5.9  </code></pre>
+ [1] sass_0.4.10        generics_0.1.4     stringi_1.8.9      hms_1.1.4         
+ [5] digest_0.6.39      magrittr_2.0.5     timechange_0.4.0   evaluate_1.0.5    
+ [9] grid_4.5.1         RColorBrewer_1.1-3 fastmap_1.2.0      rprojroot_2.1.1   
+[13] jsonlite_2.0.0     processx_3.9.0     whisker_0.4.1      ps_1.9.3          
+[17] promises_1.5.0     httr_1.4.8         crosstalk_1.2.2    scales_1.4.0      
+[21] jquerylib_0.1.4    cli_3.6.6          rlang_1.3.0        withr_3.0.3       
+[25] cachem_1.1.0       yaml_2.3.12        otel_0.2.0         tools_4.5.1       
+[29] tzdb_0.5.0         DT_0.34.0          httpuv_1.6.17      vctrs_0.7.3       
+[33] R6_2.6.1           lifecycle_1.0.5    git2r_0.36.2       htmlwidgets_1.6.4 
+[37] fs_2.1.0           pkgconfig_2.0.3    callr_3.8.0        pillar_1.11.1     
+[41] bslib_0.12.0       later_1.4.8        gtable_0.3.6       glue_1.8.1        
+[45] Rcpp_1.1.2         xfun_0.60          tidyselect_1.2.1   rstudioapi_0.19.0 
+[49] knitr_1.51         dichromat_2.0-1    farver_2.1.2       htmltools_0.5.9   
+[53] rmarkdown_2.31     compiler_4.5.1     getPass_0.2-4      S7_0.2.2          </code></pre>
 </div>
 </div>
 </div>
